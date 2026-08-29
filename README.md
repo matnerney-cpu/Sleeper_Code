@@ -49,6 +49,15 @@ CORS/localStorage rules — use a local server if the page shows a fetch error.
 3. Data auto-refreshes every 5 minutes while the tab is open; use **Refresh**
    for an immediate pull.
 
+## Updating the app
+
+`index.html` loads `app.js` and `styles.css` with a `?v=N` cache-busting
+query string. Browsers and GitHub's CDN can otherwise cache those files for
+a while, so a page reload right after a deploy can silently keep running old
+JS/CSS even though the HTML updated. **Bump `v=N` by 1 in both `<link>` and
+`<script>` tags in `index.html` any time `app.js` or `styles.css` changes** —
+that forces every browser to fetch the new versions instead of a cached copy.
+
 ## Notes
 
 - All data is fetched client-side from `api.sleeper.app`. Nothing is sent
