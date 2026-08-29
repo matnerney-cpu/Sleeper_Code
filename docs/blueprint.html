@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sleeper Dashboard Blueprint</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f6f4ef;
+    --surface: #ffffff;
+    --surface-2: #f0ede5;
+    --ink: #17181c;
+    --ink-2: #55585f;
+    --ink-3: #8b8d93;
+    --line: #ddd8cd;
+    --accent: #2059a6;
+    --accent-soft: #dce8f6;
+    --future: #6b4fc9;
+    --future-soft: #e9e3f8;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+    --display: "Archivo", system-ui, sans-serif;
+    --body: "Source Serif 4", Georgia, serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #131317;
+      --surface: #1b1c21;
+      --surface-2: #202127;
+      --ink: #f1f0ec;
+      --ink-2: #b7b9c0;
+      --ink-3: #7d7f88;
+      --line: #2c2d34;
+      --accent: #6fa4ec;
+      --accent-soft: #1f3352;
+      --future: #b09af0;
+      --future-soft: #2c2445;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #131317;
+    --surface: #1b1c21;
+    --surface-2: #202127;
+    --ink: #f1f0ec;
+    --ink-2: #b7b9c0;
+    --ink-3: #7d7f88;
+    --line: #2c2d34;
+    --accent: #6fa4ec;
+    --accent-soft: #1f3352;
+    --future: #b09af0;
+    --future-soft: #2c2445;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--body);
+    margin: 0;
+    padding: 0 20px 90px;
+  }
+  .sheet { max-width: 760px; margin: 0 auto; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  header.hero {
+    padding: 64px 0 36px;
+    border-bottom: 1px solid var(--line);
+  }
+  h1 {
+    font-family: var(--display);
+    font-size: clamp(32px, 5.5vw, 46px);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin: 10px 0 12px;
+    text-wrap: balance;
+    line-height: 1.05;
+  }
+  .dek {
+    font-family: var(--body);
+    font-size: 18px;
+    color: var(--ink-2);
+    max-width: 60ch;
+    line-height: 1.5;
+    margin: 0 0 22px;
+  }
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chip {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--ink-2);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    padding: 5px 9px;
+  }
+
+  section { padding: 44px 0; border-bottom: 1px solid var(--line); }
+  section:last-of-type { border-bottom: none; }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .section-num {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent);
+  }
+  h2 {
+    font-family: var(--display);
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.005em;
+    text-wrap: balance;
+  }
+  .section-sub {
+    color: var(--ink-2);
+    font-size: 15.5px;
+    max-width: 62ch;
+    margin: 10px 0 26px;
+    line-height: 1.55;
+  }
+
+  p { font-size: 16px; line-height: 1.65; max-width: 66ch; }
+
+  ul.recap { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  ul.recap li {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 14px;
+    font-size: 15px;
+    align-items: baseline;
+  }
+  ul.recap .tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  figure { margin: 28px 0 8px; }
+  .diagram-frame {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px 14px 10px;
+  }
+  svg { max-width: 100%; height: auto; display: block; }
+  figcaption {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-3);
+    margin-top: 10px;
+    line-height: 1.5;
+  }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; margin-top: 6px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-3); font-weight: 600; }
+  td.endpoint { font-family: var(--mono); font-size: 12.5px; color: var(--accent); white-space: nowrap; }
+  .table-scroll { overflow-x: auto; }
+
+  ul.checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+  ul.checks li { display: flex; gap: 12px; font-size: 15px; line-height: 1.55; }
+  ul.checks .mark {
+    flex: none;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+    margin-top: 1px;
+  }
+  ul.checks b { font-family: var(--display); font-weight: 700; }
+
+  .lanes { display: grid; grid-template-columns: 1fr; gap: 22px; margin-top: 8px; }
+  @media (min-width: 640px) { .lanes { grid-template-columns: 1fr 1fr; } }
+  .lane {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px 20px 22px;
+  }
+  .lane.future { border-color: color-mix(in srgb, var(--future) 40%, var(--line)); }
+  .lane-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .lane.future .lane-label { color: var(--future); }
+  .lane h3 { font-family: var(--display); font-size: 17px; margin: 0 0 10px; }
+  .lane ul { margin: 0; padding-left: 18px; font-size: 14.5px; line-height: 1.6; color: var(--ink-2); }
+  .lane ul li { margin-bottom: 6px; }
+
+  .callout {
+    background: var(--future-soft);
+    border: 1px solid color-mix(in srgb, var(--future) 35%, var(--line));
+    border-radius: 10px;
+    padding: 16px 18px;
+    font-size: 14.5px;
+    color: var(--ink);
+    margin-top: 22px;
+    line-height: 1.6;
+  }
+  .callout b { color: var(--future); font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; display: block; margin-bottom: 6px; }
+
+  footer {
+    padding-top: 40px;
+    font-size: 13.5px;
+    color: var(--ink-3);
+  }
+  footer a { color: var(--accent); }
+  a { color: var(--accent); }
+
+  .arrow-label { font-family: var(--mono); font-size: 11px; fill: currentColor; }
+  .node-title { font-family: var(--display); font-size: 13.5px; font-weight: 700; fill: currentColor; }
+  .node-sub { font-family: var(--mono); font-size: 10.5px; fill: currentColor; opacity: 0.65; }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header class="hero">
+    <div class="eyebrow">Project recap · built with Claude Code</div>
+    <h1>Sleeper Dashboard Blueprint</h1>
+    <p class="dek">A plain look at how your live fantasy football dashboard actually works — where the data comes from, where it's hosted, what's protecting it, and what it would take to bolt real AI on top.</p>
+    <div class="meta-row">
+      <span class="chip">league 1313658287350087680</span>
+      <span class="chip">frontend: html / css / js</span>
+      <span class="chip">hosting: github pages</span>
+      <span class="chip">data: sleeper public api</span>
+      <span class="chip">ai layer: none (yet)</span>
+    </div>
+  </header>
+
+  <section>
+    <div class="section-head"><span class="section-num">01</span><h2>What we built</h2></div>
+    <p class="section-sub">A single web page — no app store, no install, no account — that reads your Sleeper league directly and turns it into four views.</p>
+    <ul class="recap">
+      <li><span class="tag">Overview</span><span>Record, points for/against, league rank, waiver budget, current NFL week.</span></li>
+      <li><span class="tag">My Team</span><span>Your starters and bench in your league's exact lineup slots, with live injury flags.</span></li>
+      <li><span class="tag">Standings</span><span>The full league table, your row highlighted.</span></li>
+      <li><span class="tag">Waiver Targets</span><span>Trending adds league-wide, filtered to free agents, ranked against your roster's actual gaps.</span></li>
+      <li><span class="tag">Strategy</span><span>Rule-based notes: injured starters, thin positions, schedule-luck read, trade angles.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="section-num">02</span><h2>How data flows today</h2></div>
+    <p class="section-sub">Two separate jobs are happening, and it matters that they're separate: one place hands you the <em>app</em>, a different place hands you the <em>data</em> — and nothing of mine sits in between.</p>
+
+    <figure>
+      <div class="diagram-frame">
+        <svg viewBox="0 0 780 300" role="img" aria-label="GitHub Pages loads the app into your browser once; your browser then talks directly to the Sleeper API for live data, refreshing every five minutes, and saves your preferences to its own local storage.">
+          <defs>
+            <marker id="arrow1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+            </marker>
+          </defs>
+
+          <!-- GitHub Pages -->
+          <rect x="18" y="44" width="168" height="66" rx="8" fill="none" stroke="currentColor" stroke-width="1.4"/>
+          <text x="102" y="72" text-anchor="middle" class="node-title">GitHub Pages</text>
+          <text x="102" y="90" text-anchor="middle" class="node-sub">serves 3 static files</text>
+
+          <!-- Browser (hub) -->
+          <rect x="300" y="16" width="200" height="150" rx="10" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.6"/>
+          <text x="400" y="50" text-anchor="middle" class="node-title" fill="var(--accent)" style="fill:var(--accent)">Your Browser</text>
+          <text x="400" y="68" text-anchor="middle" class="node-sub" style="fill:var(--accent)">runs app.js</text>
+          <text x="400" y="86" text-anchor="middle" class="node-sub" style="fill:var(--accent)">+ the strategy rule engine</text>
+
+          <!-- Sleeper API -->
+          <rect x="592" y="44" width="168" height="66" rx="8" fill="none" stroke="currentColor" stroke-width="1.4"/>
+          <text x="676" y="72" text-anchor="middle" class="node-title">Sleeper API</text>
+          <text x="676" y="90" text-anchor="middle" class="node-sub">public, read-only</text>
+
+          <!-- GH -> Browser -->
+          <line x1="186" y1="70" x2="296" y2="55" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrow1)"/>
+          <text x="240" y="42" text-anchor="middle" class="arrow-label">① loads the app — once</text>
+
+          <!-- Browser -> Sleeper -->
+          <line x1="500" y1="60" x2="588" y2="62" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrow1)"/>
+          <text x="544" y="42" text-anchor="middle" class="arrow-label">② asks for league data</text>
+
+          <!-- Sleeper -> Browser -->
+          <line x1="588" y1="98" x2="500" y2="108" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrow1)"/>
+          <text x="544" y="128" text-anchor="middle" class="arrow-label">③ live JSON back — every open + every 5 min</text>
+
+          <!-- localStorage satellite -->
+          <rect x="335" y="228" width="130" height="50" rx="8" fill="var(--surface-2)" stroke="currentColor" stroke-width="1"/>
+          <text x="400" y="250" text-anchor="middle" class="node-title" font-size="12">localStorage</text>
+          <text x="400" y="266" text-anchor="middle" class="node-sub">this device only</text>
+          <line x1="400" y1="166" x2="400" y2="224" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrow1)"/>
+          <text x="480" y="200" text-anchor="middle" class="arrow-label">saves league ID</text>
+          <text x="480" y="213" text-anchor="middle" class="arrow-label">+ your team pick</text>
+        </svg>
+      </div>
+      <figcaption>Fig. 1 — GitHub Pages only ever hands out the three app files. Every live number comes from a direct, repeated conversation between your browser and Sleeper's own public servers.</figcaption>
+    </figure>
+
+    <p>That's the whole trick behind "live": the page doesn't store a snapshot of your league anywhere. It re-asks Sleeper the same questions every time it opens, and again every five minutes after that, so it's always looking at the current state of your league.</p>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="section-num">03</span><h2>Connections made</h2></div>
+    <p class="section-sub">All of them are public Sleeper endpoints — no key, no login required to read them.</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Endpoint</th><th>What it's used for</th></tr></thead>
+        <tbody>
+          <tr><td class="endpoint">/league/&#123;id&#125;</td><td>League name, season, scoring format, lineup slots</td></tr>
+          <tr><td class="endpoint">/league/&#123;id&#125;/rosters</td><td>Every team's players, record, points for/against</td></tr>
+          <tr><td class="endpoint">/league/&#123;id&#125;/users</td><td>Team names and owners, to populate the "My Team" picker</td></tr>
+          <tr><td class="endpoint">/league/&#123;id&#125;/matchups/&#123;week&#125;</td><td>This week's live scoring, per player</td></tr>
+          <tr><td class="endpoint">/players/nfl</td><td>Full player names, positions, injury status (cached 24h)</td></tr>
+          <tr><td class="endpoint">/players/nfl/trending/add</td><td>Waiver targets — who's being added league-wide</td></tr>
+          <tr><td class="endpoint">/players/nfl/trending/drop</td><td>Early-warning — who's being cut league-wide</td></tr>
+          <tr><td class="endpoint">/state/nfl</td><td>Current NFL week, so the app knows what to ask for</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="section-num">04</span><h2>Security posture</h2></div>
+    <p class="section-sub">The short version: there's nothing secret in this app, because nothing secret was ever needed.</p>
+    <ul class="checks">
+      <li><span class="mark">✓</span><span><b>No credentials anywhere.</b> No password, login, or API key is stored in the code — Sleeper's public data doesn't require one.</span></li>
+      <li><span class="mark">✓</span><span><b>Read-only, always.</b> The app can only look at league data. It can't submit a waiver claim, make a trade, or touch your real Sleeper account.</span></li>
+      <li><span class="mark">✓</span><span><b>Nothing leaves your device.</b> The only saved state — your league ID and which team is yours — lives in your browser's local storage, never sent anywhere.</span></li>
+      <li><span class="mark">✓</span><span><b>No middleman server.</b> Data goes browser ↔ Sleeper directly. There's no server of ours collecting, logging, or relaying what you look at.</span></li>
+      <li><span class="mark">✓</span><span><b>Safe to make public.</b> The GitHub repo could be fully open-source with zero risk, since making the code visible reveals no secret — it's the same logic anyone could already write against Sleeper's open API.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="section-num">05</span><h2>Next steps</h2></div>
+    <p class="section-sub">Two different directions from here — you don't need AI to keep improving this, but here's what each path costs.</p>
+
+    <div class="lanes">
+      <div class="lane">
+        <div class="lane-label">Keep iterating — no AI needed</div>
+        <h3>More rules, more data</h3>
+        <ul>
+          <li>Pull season stats to project points instead of just counting rostered bodies</li>
+          <li>Support more than one league from the same page</li>
+          <li>Add a trade value calculator between two specific players</li>
+          <li>Push a browser/phone notification when a starter's status changes</li>
+          <li>"Add to Home Screen" so it opens like a native app</li>
+        </ul>
+      </div>
+      <div class="lane future">
+        <div class="lane-label">Add real AI</div>
+        <h3>A model, not just rules</h3>
+        <ul>
+          <li>Natural-language weekly recap: "why you won/lost," in plain sentences</li>
+          <li>Judgment calls the fixed rules can't make — trade fairness, start/sit reasoning</li>
+          <li>Answers to open questions you type in, not just fixed checks</li>
+          <li>Costs money per request, and needs a place to keep the API key secret</li>
+        </ul>
+      </div>
+    </div>
+
+    <figure>
+      <div class="diagram-frame">
+        <svg viewBox="0 0 780 270" role="img" aria-label="Today the browser talks directly to Sleeper. Adding real AI requires inserting a new server function between the browser and the AI provider, so the AI provider's secret key never reaches the browser.">
+          <defs>
+            <marker id="arrow2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+            </marker>
+          </defs>
+
+          <!-- existing, muted -->
+          <g opacity="0.5">
+            <rect x="30" y="18" width="150" height="48" rx="7" fill="none" stroke="currentColor" stroke-width="1.2"/>
+            <text x="105" y="46" text-anchor="middle" class="node-title" font-size="12">Your Browser</text>
+            <rect x="590" y="18" width="160" height="48" rx="7" fill="none" stroke="currentColor" stroke-width="1.2"/>
+            <text x="670" y="46" text-anchor="middle" class="node-title" font-size="12">Sleeper API</text>
+            <line x1="180" y1="42" x2="586" y2="42" stroke="currentColor" stroke-width="1.2" marker-end="url(#arrow2)"/>
+            <text x="383" y="30" text-anchor="middle" class="arrow-label">unchanged — same as Fig. 1</text>
+          </g>
+
+          <!-- new: browser to server -->
+          <rect x="30" y="150" width="150" height="48" rx="7" fill="none" stroke="currentColor" stroke-width="1.2"/>
+          <text x="105" y="178" text-anchor="middle" class="node-title" font-size="12">Your Browser</text>
+
+          <rect x="290" y="140" width="210" height="68" rx="8" stroke-dasharray="5 4" fill="var(--future-soft)" stroke="var(--future)" stroke-width="1.6"/>
+          <text x="395" y="168" text-anchor="middle" class="node-title" font-size="13" style="fill:var(--future)">New: Small Server</text>
+          <text x="395" y="185" text-anchor="middle" class="node-sub" style="fill:var(--future)">holds the AI key safely</text>
+
+          <rect x="590" y="150" width="160" height="48" rx="7" fill="var(--future-soft)" stroke="var(--future)" stroke-width="1.6"/>
+          <text x="670" y="178" text-anchor="middle" class="node-title" font-size="12" style="fill:var(--future)">AI Model API</text>
+
+          <line x1="180" y1="164" x2="286" y2="164" stroke="var(--future)" stroke-width="1.5" marker-end="url(#arrow2)"/>
+          <text x="233" y="152" text-anchor="middle" class="arrow-label" style="fill:var(--future)">① question</text>
+
+          <line x1="500" y1="160" x2="586" y2="160" stroke="var(--future)" stroke-width="1.5" marker-end="url(#arrow2)"/>
+          <text x="543" y="148" text-anchor="middle" class="arrow-label" style="fill:var(--future)">② calls AI</text>
+
+          <line x1="586" y1="192" x2="500" y2="196" stroke="var(--future)" stroke-width="1.5" marker-end="url(#arrow2)"/>
+          <text x="543" y="216" text-anchor="middle" class="arrow-label" style="fill:var(--future)">③ write-up</text>
+
+          <line x1="286" y1="200" x2="180" y2="196" stroke="var(--future)" stroke-width="1.5" marker-end="url(#arrow2)"/>
+          <text x="233" y="220" text-anchor="middle" class="arrow-label" style="fill:var(--future)">④ result</text>
+        </svg>
+      </div>
+      <figcaption>Fig. 2 — the one real change: a new server sits between your browser and the AI provider, because an AI API key is secret and client-side code (like app.js today) is fully visible to anyone who opens it.</figcaption>
+    </figure>
+
+    <div class="callout">
+      <b>Why not just call the AI from app.js directly?</b>
+      Any key pasted into browser-side JavaScript is readable by every visitor — right-click, "view source," done. That's fine for Sleeper's key-free public data, but an AI provider's key is billed to whoever holds it, so it has to live somewhere a visitor's browser can't reach: a small backend function (a free tier on something like Cloudflare Workers or a Vercel function) that takes the request, adds the secret key itself, calls the AI, and hands back only the answer.
+    </div>
+  </section>
+
+  <footer>
+    Live dashboard: <a href="https://matnerney-cpu.github.io/Sleeper_Code/">matnerney-cpu.github.io/Sleeper_Code</a> · Source: <a href="https://github.com/matnerney-cpu/Sleeper_Code">github.com/matnerney-cpu/Sleeper_Code</a>
+  </footer>
+
+</div>
+</body>
+</html>

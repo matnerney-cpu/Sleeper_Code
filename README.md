@@ -6,6 +6,8 @@ no build step.
 
 Default league ID: `1313658287350087680` (editable in the app).
 
+See [`docs/blueprint.html`](docs/blueprint.html) for a plain-language walkthrough of how it's built, the Sleeper API connections it makes, its security posture, and next steps for iterating (including what adding real AI would take).
+
 ## What it shows
 
 - **Overview** — league status, scoring format, your record/rank, waiver budget or priority.
