@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sleeper League Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-top">
+      <div class="league-id">
+        <img id="league-avatar" class="avatar avatar-lg" alt="" hidden />
+        <div>
+          <h1 id="league-name">Sleeper League Dashboard</h1>
+          <div class="league-meta" id="league-meta">Loading league…</div>
+        </div>
+      </div>
+      <div class="header-controls">
+        <label class="field">
+          <span>League ID</span>
+          <input id="league-id-input" type="text" inputmode="numeric" autocomplete="off" />
+        </label>
+        <label class="field">
+          <span>My Team</span>
+          <select id="my-team-select">
+            <option value="">Select your team…</option>
+          </select>
+        </label>
+        <button id="refresh-btn" class="btn" type="button">Refresh</button>
+        <button id="theme-toggle" class="btn btn-ghost" type="button" aria-label="Toggle theme">🌓</button>
+      </div>
+    </div>
+    <div id="error-banner" class="banner banner-error" hidden></div>
+    <div class="header-bottom">
+      <nav class="tabs" id="tabs">
+        <button class="tab-btn active" data-tab="overview">Overview</button>
+        <button class="tab-btn" data-tab="myteam">My Team</button>
+        <button class="tab-btn" data-tab="standings">Standings</button>
+        <button class="tab-btn" data-tab="waiver">Waiver Targets</button>
+        <button class="tab-btn" data-tab="strategy">Strategy</button>
+      </nav>
+      <div class="last-updated" id="last-updated"></div>
+    </div>
+  </header>
+
+  <main id="app-main">
+    <section id="tab-overview" class="tab-panel active">
+      <div class="stat-grid" id="overview-stats"></div>
+      <div class="card">
+        <h2>League Snapshot</h2>
+        <div id="overview-standings-preview"></div>
+      </div>
+    </section>
+
+    <section id="tab-myteam" class="tab-panel">
+      <div class="card">
+        <h2>Starters</h2>
+        <div id="myteam-starters"></div>
+      </div>
+      <div class="card">
+        <h2>Bench</h2>
+        <div id="myteam-bench"></div>
+      </div>
+      <div class="card" id="myteam-ir-card" hidden>
+        <h2>IR / Taxi</h2>
+        <div id="myteam-ir"></div>
+      </div>
+    </section>
+
+    <section id="tab-standings" class="tab-panel">
+      <div class="card">
+        <h2>Standings</h2>
+        <div id="standings-table"></div>
+      </div>
+    </section>
+
+    <section id="tab-waiver" class="tab-panel">
+      <div class="card">
+        <h2>Top Waiver Targets</h2>
+        <p class="card-sub">Trending adds across Sleeper, filtered to free agents in your league and ranked by your roster's need.</p>
+        <div id="waiver-targets"></div>
+      </div>
+      <div class="card">
+        <h2>Watch Your Roster</h2>
+        <p class="card-sub">Your players that a lot of managers are cutting right now.</p>
+        <div id="waiver-drops"></div>
+      </div>
+    </section>
+
+    <section id="tab-strategy" class="tab-panel">
+      <div class="card">
+        <h2>What To Do This Week</h2>
+        <div id="strategy-list"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="loading-overlay" class="loading-overlay" hidden>
+    <div class="spinner"></div>
+    <div>Loading league data…</div>
+  </div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
