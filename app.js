@@ -10,6 +10,7 @@ const BENCH_CUSHION = { QB: 1, RB: 2, WR: 2, TE: 1, K: 0, DEF: 0 };
 // K/DEF are conventionally streamed, not stockpiled — depth heuristics only apply to skill positions.
 const DEPTH_TRACKED_POSITIONS = ['QB', 'RB', 'WR', 'TE'];
 const BAD_INJURY_STATUSES = new Set(['Questionable', 'Doubtful', 'Out', 'IR', 'PUP', 'Suspended', 'NA']);
+const ESPN_SCOREBOARD = 'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard';
 
 const state = {
   leagueId: null,
@@ -23,6 +24,10 @@ const state = {
   weekMatchups: [],
   myUserId: null,
   refreshTimer: null,
+  scheduleGames: [],
+  scheduleLabel: '',
+  scheduleParams: null, // { year, seasontype, week } — null means "let ESPN pick the current week"
+  scheduleError: null,
 };
 
 const $ = (sel) => document.querySelector(sel);
@@ -128,6 +133,7 @@ async function loadAll(leagueId) {
     }
 
     populateTeamSelector();
+    await loadSchedule(state.scheduleParams);
     renderAll();
     $('#last-updated').textContent = `Updated ${new Date().toLocaleTimeString()}`;
   } catch (err) {
@@ -136,6 +142,108 @@ async function loadAll(leagueId) {
   } finally {
     $('#loading-overlay').hidden = true;
   }
+}
+
+// ---------- NFL schedule (ESPN's public scoreboard — Sleeper has no game-time/TV data) ----------
+function scheduleQueryString(params) {
+  if (!params) return '';
+  return `?year=${params.year}&seasontype=${params.seasontype}&week=${params.week}`;
+}
+
+async function loadSchedule(params) {
+  state.scheduleError = null;
+  try {
+    const data = await fetchJSON(`${ESPN_SCOREBOARD}${scheduleQueryString(params)}`);
+    state.scheduleGames = data.events || [];
+    if (data.season && data.week) {
+      state.scheduleParams = { year: data.season.year, seasontype: data.season.type, week: data.week.number };
+    }
+    const seasonTypeName = { 1: 'Preseason', 2: 'Regular Season', 3: 'Postseason' }[data.season?.type] || '';
+    state.scheduleLabel = data.week ? `Week ${data.week.number} · ${seasonTypeName}` : 'This Week';
+  } catch (err) {
+    console.error(err);
+    state.scheduleGames = [];
+    state.scheduleError = "Couldn't load the NFL schedule right now (ESPN's schedule feed didn't respond). Try Refresh.";
+  }
+}
+
+function myNflTeams() {
+  const roster = myRoster();
+  const teams = new Set();
+  if (!roster) return teams;
+  for (const pid of roster.players || []) {
+    const p = getPlayer(pid);
+    if (p.team) teams.add(p.team);
+  }
+  return teams;
+}
+
+function renderSchedule() {
+  $('#schedule-week-label').textContent = state.scheduleLabel || '—';
+  const container = $('#schedule-games');
+  container.innerHTML = '';
+
+  if (state.scheduleError) {
+    container.appendChild(emptyState(state.scheduleError));
+    return;
+  }
+  if (!state.scheduleGames.length) {
+    container.appendChild(emptyState('No games found for this week.'));
+    return;
+  }
+
+  const myTeams = myNflTeams();
+  state.scheduleGames.forEach((event) => {
+    const comp = event.competitions?.[0];
+    if (!comp) return;
+    const home = comp.competitors?.find((c) => c.homeAway === 'home');
+    const away = comp.competitors?.find((c) => c.homeAway === 'away');
+    if (!home || !away) return;
+
+    const isMyGame = myTeams.has(home.team?.abbreviation) || myTeams.has(away.team?.abbreviation);
+    const kickoff = comp.date ? new Date(comp.date) : null;
+    const timeStr = kickoff
+      ? kickoff.toLocaleString(undefined, { weekday: 'short', hour: 'numeric', minute: '2-digit' })
+      : 'TBD';
+    const network = (comp.broadcasts && comp.broadcasts[0]?.names?.join(', ')) || 'TBD';
+    const state_ = comp.status?.type?.state; // 'pre' | 'in' | 'post'
+    const statusText = state_ === 'in' ? (comp.status?.type?.shortDetail || 'Live')
+      : state_ === 'post' ? 'Final'
+      : '';
+
+    const row = el('div', { class: `game-row${isMyGame ? ' my-teams' : ''}` }, [
+      el('div', { class: 'game-time' }, timeStr),
+      el('div', { class: 'game-matchup' }, [
+        teamNode(away), el('span', { class: 'at' }, '@'), teamNode(home),
+        isMyGame ? el('span', { class: 'my-teams-tag' }, 'Your players') : null,
+      ]),
+      el('div', { class: 'game-network' }, network),
+      el('div', { class: `game-status ${state_ === 'in' ? 'live' : state_ === 'post' ? 'final' : ''}` }, statusText),
+    ]);
+    container.appendChild(row);
+  });
+}
+
+function teamNode(competitor) {
+  const abbr = competitor.team?.abbreviation || '';
+  const logo = competitor.team?.logo;
+  const span = el('span', {}, abbr + (competitor.score != null && competitor.score !== '' ? ` ${competitor.score}` : ''));
+  if (!logo) return span;
+  const img = el('img', { class: 'game-logo', src: logo, alt: '' });
+  img.addEventListener('error', () => { img.hidden = true; });
+  const wrap = el('span', {});
+  wrap.appendChild(img);
+  wrap.appendChild(span);
+  return wrap;
+}
+
+async function stepScheduleWeek(delta) {
+  const current = state.scheduleParams;
+  if (!current) return; // haven't resolved a starting week yet
+  const next = { ...current, week: Math.max(1, current.week + delta) };
+  $('#schedule-week-label').textContent = 'Loading…';
+  await loadSchedule(next);
+  renderSchedule();
 }
 
 function myTeamStorageKey(leagueId) { return `sleeper_dash_myuser_${leagueId}`; }
@@ -231,6 +339,7 @@ function renderAll() {
   renderOverview();
   renderMyTeam();
   renderStandings();
+  renderSchedule();
   renderWaiver();
   renderStrategy();
 }
@@ -617,6 +726,9 @@ function init() {
     else localStorage.removeItem(myTeamStorageKey(state.leagueId));
     renderAll();
   });
+
+  $('#schedule-prev').addEventListener('click', () => stepScheduleWeek(-1));
+  $('#schedule-next').addEventListener('click', () => stepScheduleWeek(1));
 
   loadAll(input.value.trim());
   scheduleAutoRefresh();

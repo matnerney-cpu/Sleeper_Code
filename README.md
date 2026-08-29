@@ -13,6 +13,7 @@ See [`docs/blueprint.html`](docs/blueprint.html) for a plain-language walkthroug
 - **Overview** — league status, scoring format, your record/rank, waiver budget or priority.
 - **My Team** — your starting lineup and bench, with live injury flags and (during the season) this week's points.
 - **Standings** — full league table, your row highlighted.
+- **Schedule** — this week's NFL games with kickoff time (your local time) and TV network, via ESPN's public scoreboard, with games involving your rostered players' teams marked. Use the arrows to browse other weeks.
 - **Waiver Targets** — players trending up across Sleeper who are still free agents in *your* league, ranked against your actual roster needs. Also flags your own players that a lot of managers are dropping.
 - **Strategy** — auto-generated, data-driven suggestions: injured starters to replace, thin position groups, schedule-luck read, and trade angles based on positional surplus vs. other teams' needs.
 

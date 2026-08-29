@@ -37,6 +37,7 @@
         <button class="tab-btn active" data-tab="overview">Overview</button>
         <button class="tab-btn" data-tab="myteam">My Team</button>
         <button class="tab-btn" data-tab="standings">Standings</button>
+        <button class="tab-btn" data-tab="schedule">Schedule</button>
         <button class="tab-btn" data-tab="waiver">Waiver Targets</button>
         <button class="tab-btn" data-tab="strategy">Strategy</button>
       </nav>
@@ -72,6 +73,21 @@
       <div class="card">
         <h2>Standings</h2>
         <div id="standings-table"></div>
+      </div>
+    </section>
+
+    <section id="tab-schedule" class="tab-panel">
+      <div class="card">
+        <div class="schedule-head">
+          <h2>NFL Schedule</h2>
+          <div class="schedule-nav">
+            <button id="schedule-prev" class="btn btn-ghost" type="button" aria-label="Previous week">←</button>
+            <span id="schedule-week-label" class="schedule-week-label">Loading…</span>
+            <button id="schedule-next" class="btn btn-ghost" type="button" aria-label="Next week">→</button>
+          </div>
+        </div>
+        <p class="card-sub">Kickoff times (your local time) and TV network, via ESPN's public scoreboard. Games involving one of your rostered players' teams are marked.</p>
+        <div id="schedule-games"></div>
       </div>
     </section>
 
